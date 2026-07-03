@@ -94,8 +94,8 @@ const Index = () => {
       <header className="sticky top-0 z-40 border-b border-border/60 bg-background/80 backdrop-blur-xl">
         <div className="container flex h-16 items-center justify-between gap-4">
           <button onClick={() => scrollTo('top')} className="flex items-center gap-2.5">
-            <div className="grid h-9 w-9 place-items-center rounded-xl gradient-purple glow">
-              <Icon name="Cookie" size={20} className="text-white" />
+            <div className="grid h-9 w-9 place-items-center rounded-full bg-secondary/80 glow">
+              <span className="font-black text-lg gradient-text">C</span>
             </div>
             <span className="text-lg font-extrabold tracking-tight">Cookie Stock</span>
           </button>
@@ -344,8 +344,8 @@ const Index = () => {
       <footer className="border-t border-border/60 py-10">
         <div className="container flex flex-col items-center justify-between gap-4 md:flex-row">
           <div className="flex items-center gap-2.5">
-            <div className="grid h-8 w-8 place-items-center rounded-lg gradient-purple">
-              <Icon name="Cookie" size={16} className="text-white" />
+            <div className="grid h-8 w-8 place-items-center rounded-full bg-secondary/80">
+              <span className="font-black gradient-text">C</span>
             </div>
             <span className="font-extrabold">Cookie Stock</span>
           </div>
