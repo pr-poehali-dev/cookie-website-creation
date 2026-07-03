@@ -2,7 +2,15 @@ import { useState, useMemo } from 'react';
 import Icon from '@/components/ui/icon';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useToast } from '@/hooks/use-toast';
 import { products, categories, type Product } from '@/data/products';
+
+const paymentMethods = [
+  { id: 'card', label: 'Банковская карта', icon: 'CreditCard' },
+  { id: 'sbp', label: 'СБП', icon: 'Landmark' },
+  { id: 'crypto', label: 'Криптовалюта', icon: 'Bitcoin' },
+  { id: 'yoomoney', label: 'ЮMoney', icon: 'Wallet' },
+];
 
 const liveFeed = [
   { user: 'kir***', item: 'MM2 (70+ LVL)', ago: 'только что' },
@@ -20,6 +28,12 @@ const reviews = [
   { name: 'DarkFoxYT', avatar: 'D', rating: 4, text: 'Pet Simulator аккаунт норм, петы редкие. Единственное — ждал минут 10, но всё выдали.' },
   { name: 'ToxicSlayer', avatar: 'T', rating: 5, text: 'Цены реально ниже чем везде. Взял сразу два аккаунта, оба рабочие. Рекомендую!' },
   { name: 'MoonlightGG', avatar: 'M', rating: 5, text: 'Grow a Garden PRO — сад просто огонь, редкие мутации. Спасибо большое!' },
+  { name: 'FrostbiteRex', avatar: 'F', rating: 5, text: 'Заказал донат аккаунт на 10к робуксов — всё пришло мгновенно, без обмана.' },
+  { name: 'LunaVortex', avatar: 'L', rating: 5, text: 'Первый раз покупала аккаунт онлайн, боялась развода. Всё чётко, спасибо магазину!' },
+  { name: 'RapidBlaze', avatar: 'R', rating: 5, text: 'Blade Ball аккаунт с наигранным временем — ровно как описано. Быстро и удобно.' },
+  { name: 'CyberNinja88', avatar: 'C', rating: 4, text: 'MM2 стартовый аккаунт для друга — цена супер низкая, всё работает отлично.' },
+  { name: 'VelvetStorm', avatar: 'V', rating: 5, text: 'Аккаунт с PLUS статусом огонь, ещё и дешевле чем в других магазинах.' },
+  { name: 'GhostRunner_', avatar: 'G', rating: 5, text: 'Уже пятая покупка подряд — стабильно быстрая выдача и честные цены.' },
 ];
 
 const faq = [
@@ -30,10 +44,12 @@ const faq = [
 ];
 
 const Index = () => {
+  const { toast } = useToast();
   const [active, setActive] = useState('Все');
   const [search, setSearch] = useState('');
   const [cart, setCart] = useState<Product[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
+  const [payMethod, setPayMethod] = useState('card');
 
   const filtered = useMemo(() => {
     return products.filter(
@@ -44,8 +60,19 @@ const Index = () => {
   }, [active, search]);
 
   const total = cart.reduce((s, p) => s + p.price, 0);
-  const add = (p: Product) => setCart((c) => [...c, p]);
+  const add = (p: Product) => {
+    setCart((c) => [...c, p]);
+    toast({ title: 'Добавлено в корзину', description: p.title });
+  };
   const removeAt = (i: number) => setCart((c) => c.filter((_, idx) => idx !== i));
+  const checkout = () => {
+    toast({
+      title: 'Заказ оформлен!',
+      description: `Оплата: ${paymentMethods.find((m) => m.id === payMethod)?.label}. Сумма ${total} ₽`,
+    });
+    setCart([]);
+    setCartOpen(false);
+  };
 
   const scrollTo = (id: string) =>
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -354,12 +381,33 @@ const Index = () => {
               )}
             </div>
             <div className="border-t border-border p-5">
+              {cart.length > 0 && (
+                <div className="mb-4">
+                  <div className="mb-2 text-sm font-semibold text-muted-foreground">Способ оплаты</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {paymentMethods.map((m) => (
+                      <button
+                        key={m.id}
+                        onClick={() => setPayMethod(m.id)}
+                        className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all ${
+                          payMethod === m.id
+                            ? 'border-primary bg-primary/10 text-primary'
+                            : 'border-border bg-secondary/30 text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        <Icon name={m.icon} size={16} />
+                        {m.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="mb-4 flex items-center justify-between">
                 <span className="text-muted-foreground">Итого</span>
                 <span className="text-2xl font-black">{total} ₽</span>
               </div>
-              <Button disabled={cart.length === 0} className="gradient-purple w-full rounded-full font-semibold text-white">
-                Оформить заказ
+              <Button onClick={checkout} disabled={cart.length === 0} className="gradient-purple w-full rounded-full font-semibold text-white">
+                Оплатить и оформить
               </Button>
             </div>
           </div>
